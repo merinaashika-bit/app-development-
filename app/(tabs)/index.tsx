@@ -1,40 +1,53 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import { useState } from 'react';
+import { useState } from "react";
+import { View, Text, Button, StyleSheet, Alert } from "react-native";
 
-export default function HomeScreen() {
-
-  const [punchInTime, setPunchInTime] = useState('');
-  const [punchOutTime, setPunchOutTime] = useState('');
+export default function PunchScreen() {
+  const [punchInTime, setPunchInTime] = useState<string | null>(null);
+  const [punchOutTime, setPunchOutTime] = useState<string | null>(null);
 
   const handlePunchIn = () => {
+    if (punchInTime) {
+      Alert.alert("Already Punched In", "You have already punched in.");
+      return;
+    }
+
     const time = new Date().toLocaleTimeString();
     setPunchInTime(time);
+    Alert.alert("Punched In", `Time: ${time}`);
   };
 
   const handlePunchOut = () => {
+    if (!punchInTime) {
+      Alert.alert("Error", "Please punch in first!");
+      return;
+    }
+
+    if (punchOutTime) {
+      Alert.alert("Already Punched Out", "You have already punched out.");
+      return;
+    }
+
     const time = new Date().toLocaleTimeString();
     setPunchOutTime(time);
+    Alert.alert("Punched Out", `Time: ${time}`);
   };
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Punch Attendance</Text>
 
-      <Text style={styles.title}>Punch In / Punch Out</Text>
+      <View style={styles.buttonContainer}>
+        <Button title="Punch In" onPress={handlePunchIn} />
+      </View>
 
-      <Text style={styles.timeText}>
-        Punch In: {punchInTime ? punchInTime : '---'}
-      </Text>
+      <View style={styles.buttonContainer}>
+        <Button title="Punch Out" onPress={handlePunchOut} />
+      </View>
 
-      <Button title="Punch In" onPress={handlePunchIn} />
-
-      <Text style={[styles.timeText, { marginTop: 30 }]}>
-        Punch Out: {punchOutTime ? punchOutTime : '---'}
-      </Text>
-
-      <Button title="Punch Out" onPress={handlePunchOut} />
-
-      <StatusBar style="auto" />
+      <View style={styles.resultBox}>
+        <Text style={styles.text}>Punch In Time: {punchInTime || "---"}</Text>
+        <Text style={styles.text}>Punch Out Time: {punchOutTime || "---"}</Text>
+      </View>
     </View>
   );
 }
@@ -42,17 +55,29 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
+    backgroundColor: "#111",
+    justifyContent: "center",
+    padding: 20,
   },
   title: {
-    fontSize: 24,
-    marginBottom: 30,
-    fontWeight: 'bold',
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 40,
   },
-  timeText: {
-    fontSize: 20,
+  buttonContainer: {
+    marginBottom: 20,
+  },
+  resultBox: {
+    marginTop: 40,
+    padding: 20,
+    backgroundColor: "#222",
+    borderRadius: 10,
+  },
+  text: {
+    fontSize: 18,
+    color: "white",
     marginBottom: 10,
   },
 });
