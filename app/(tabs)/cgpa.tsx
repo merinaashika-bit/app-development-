@@ -9,103 +9,105 @@ import {
 } from "react-native";
 
 export default function App() {
-  const [subjectCount, setSubjectCount] = useState("");
-  const [subjects, setSubjects] = useState([]);
-  const [gpa, setGpa] = useState(null);
+  const [semCount, setSemCount] = useState("");
+  const [semesters, setSemesters] = useState([]);
+  const [cgpa, setCgpa] = useState(null);
 
-  const handleSubjectCount = (value) => {
+  const handleSemesterCount = (value) => {
     if (value > 10) return;
 
-    setSubjectCount(value);
+    setSemCount(value);
     const temp = [];
     for (let i = 0; i < value; i++) {
-      temp.push({ credit: "", grade: "" });
+      temp.push({ gpa: "", credits: "" });
     }
-    setSubjects(temp);
+    setSemesters(temp);
   };
 
-  const updateSubject = (index, field, value) => {
-    const temp = [...subjects];
+  const updateSemester = (index, field, value) => {
+    const temp = [...semesters];
     temp[index][field] = value;
-    setSubjects(temp);
+    setSemesters(temp);
   };
 
-  const calculateGPA = () => {
+  const calculateCGPA = () => {
     let totalCredits = 0;
-    let totalPoints = 0;
+    let weightedSum = 0;
 
-    subjects.forEach((sub) => {
-      const credit = parseFloat(sub.credit);
-      const grade = parseFloat(sub.grade);
+    semesters.forEach((sem) => {
+      const gpa = parseFloat(sem.gpa);
+      const credits = parseFloat(sem.credits);
 
-      if (!isNaN(credit) && !isNaN(grade)) {
-        totalCredits += credit;
-        totalPoints += credit * grade;
+      if (!isNaN(gpa) && !isNaN(credits)) {
+        totalCredits += credits;
+        weightedSum += gpa * credits;
       }
     });
 
     if (totalCredits === 0) return;
 
-    const result = (totalPoints / totalCredits).toFixed(2);
-    setGpa(result);
+    const result = (weightedSum / totalCredits).toFixed(2);
+    setCgpa(result);
   };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>
-        GPA Calculator{"\n"}
+        CGPA Calculator{"\n"}
         <Text style={styles.subHeading}>
           Sri Venkateswara College of Engineering
         </Text>
       </Text>
 
-      <Text style={styles.label}>Enter Number of Subjects (Max 10)</Text>
+      <Text style={styles.label}>
+        Enter Number of Semesters Completed (Max 10)
+      </Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
-        value={subjectCount}
-        onChangeText={handleSubjectCount}
-        placeholder="Eg: 5"
+        placeholder="Eg: 4"
         placeholderTextColor="#777"
+        value={semCount}
+        onChangeText={handleSemesterCount}
       />
 
-      {subjects.map((item, index) => (
+      {semesters.map((item, index) => (
         <View key={index} style={styles.card}>
-          <Text style={styles.subjectTitle}>Subject {index + 1}</Text>
+          <Text style={styles.semTitle}>Semester {index + 1}</Text>
 
           <TextInput
             style={styles.input}
             keyboardType="numeric"
-            placeholder="Enter Credits"
+            placeholder="Enter GPA"
             placeholderTextColor="#777"
-            value={item.credit}
+            value={item.gpa}
             onChangeText={(value) =>
-              updateSubject(index, "credit", value)
+              updateSemester(index, "gpa", value)
             }
           />
 
           <TextInput
             style={styles.input}
             keyboardType="numeric"
-            placeholder="Enter Grade Point"
+            placeholder="Enter Semester Credits"
             placeholderTextColor="#777"
-            value={item.grade}
+            value={item.credits}
             onChangeText={(value) =>
-              updateSubject(index, "grade", value)
+              updateSemester(index, "credits", value)
             }
           />
         </View>
       ))}
 
-      {subjects.length > 0 && (
-        <TouchableOpacity style={styles.button} onPress={calculateGPA}>
-          <Text style={styles.buttonText}>Calculate GPA</Text>
+      {semesters.length > 0 && (
+        <TouchableOpacity style={styles.button} onPress={calculateCGPA}>
+          <Text style={styles.buttonText}>Calculate CGPA</Text>
         </TouchableOpacity>
       )}
 
-      {gpa && (
+      {cgpa && (
         <Text style={styles.result}>
-          GPA = {gpa}
+          CGPA = {cgpa}
         </Text>
       )}
     </ScrollView>
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 10,
   },
-  subjectTitle: {
+  semTitle: {
     color: "#58a6ff",
     marginBottom: 8,
     fontWeight: "bold",
